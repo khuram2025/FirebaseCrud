@@ -76,19 +76,20 @@ class _ListStudentPageState extends State<ListStudentPage> {
                     ),)
                   ]
               ),
+              for (var i  = 0; i< storedocs.length; i++)...[
               TableRow(
                   children: [
                     TableCell(
                       child: Center(
                         child: Text(
-                          "Sonam", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          storedocs[i]['name'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
                     TableCell(
                       child: Center(
                         child: Text(
-                          "Sonam@gmail.com", style: TextStyle(fontSize: 16,),
+                          storedocs[i]['email'], style: TextStyle(fontSize: 16,),
                         ),
                       ),
                     ),
@@ -117,7 +118,7 @@ class _ListStudentPageState extends State<ListStudentPage> {
                     ),
 
                   ]
-              )
+              )]
             ],
           ),
         ),
