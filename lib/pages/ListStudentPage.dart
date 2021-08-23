@@ -11,7 +11,8 @@ class ListStudentPage extends StatefulWidget {
 }
 
 class _ListStudentPageState extends State<ListStudentPage> {
-  
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   final Stream<QuerySnapshot> studentsStream = FirebaseFirestore.instance.collection('students').snapshots();
 
   deleteUser(id){
