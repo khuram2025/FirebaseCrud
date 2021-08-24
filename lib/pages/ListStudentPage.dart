@@ -15,9 +15,16 @@ class _ListStudentPageState extends State<ListStudentPage> {
 
   final Stream<QuerySnapshot> studentsStream = FirebaseFirestore.instance.collection('students').snapshots();
 
-  deleteUser(id){
-    print("User Delete $id");
+  CollectionReference students = FirebaseFirestore.instance.collection('students');
+
+  Future<void> deleteUser(id){
+
+    // print("User Delete $id");
+
+    return students.doc(id).delete().then((value) => print("User Deleter $id"))
+        .catchError((error)=> print("Failed to delete User: $error"));
   }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(stream: studentsStream,
@@ -34,6 +41,7 @@ class _ListStudentPageState extends State<ListStudentPage> {
       snapshot.data!.docs.map((DocumentSnapshot document) {
         Map a =  document.data() as Map<String, dynamic>;
         storedocs.add(a);
+        a['id'] = document.id;
       }).toList();
 
 
@@ -99,7 +107,7 @@ class _ListStudentPageState extends State<ListStudentPage> {
                         children: [
                           IconButton(
                             onPressed: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=> UpdateStudentPage()));
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=> UpdateStudentPage(id:storedocs[i]['id'])));
                             },
                             icon: Icon(
                               Icons.edit,
@@ -107,7 +115,7 @@ class _ListStudentPageState extends State<ListStudentPage> {
                             ),
                           ),
                           IconButton(
-                            onPressed: ()=>{ print(storedocs)},
+                            onPressed: ()=>{ deleteUser(storedocs[i]['id'])},
                             icon: Icon(
                               Icons.delete,
                               color: Colors.red,

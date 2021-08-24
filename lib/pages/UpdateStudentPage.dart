@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class UpdateStudentPage extends StatefulWidget {
-  UpdateStudentPage({Key? key}) : super(key: key);
+  final String id;
+  UpdateStudentPage({Key? key, required this.id}) : super(key: key);
 
   @override
   _UpdateStudentPageState createState() => _UpdateStudentPageState();
@@ -21,6 +23,9 @@ class _UpdateStudentPageState extends State<UpdateStudentPage> {
       ),
       body: Form(
           key: _formKey,
+          child: FutureBuilder<DocumentSnapshot <Map <String, dynamic>>>(
+            future: FirebaseFirestore.instance.collection("students"),
+          )
           // Getting Specific Data by ID
           child:  Padding(
                 padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
