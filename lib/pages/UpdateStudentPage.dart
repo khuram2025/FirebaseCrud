@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class UpdateStudentPage extends StatefulWidget {
@@ -10,9 +11,18 @@ class UpdateStudentPage extends StatefulWidget {
 class _UpdateStudentPageState extends State<UpdateStudentPage> {
   final _formKey = GlobalKey<FormState>();
 
-  updateUser(){
-    return print("Test.com");
+  // Updaing Student
+  CollectionReference students =
+  FirebaseFirestore.instance.collection('students');
+
+  Future<void> updateUser(id, name, email, password) {
+    return students
+        .doc(id)
+        .update({'name': name, 'email': email, 'password': password})
+        .then((value) => print("User Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,16 +32,34 @@ class _UpdateStudentPageState extends State<UpdateStudentPage> {
       body: Form(
           key: _formKey,
           // Getting Specific Data by ID
-          child:  Padding(
+          child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            future: FirebaseFirestore.instance
+                .collection('students')
+                .doc(widget.id)
+                .get(),
+            builder: (_, snapshot) {
+              if (snapshot.hasError) {
+                print('Something Went Wrong');
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              var data = snapshot.data!.data();
+              var name = data!['name'];
+              var email = data['email'];
+              var password = data['password'];
+              return Padding(
                 padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
                 child: ListView(
                   children: [
                     Container(
                       margin: EdgeInsets.symmetric(vertical: 10.0),
                       child: TextFormField(
-                        initialValue: "sonam",
+                        initialValue: name,
                         autofocus: false,
-                        onChanged: (value) => {},
+                        onChanged: (value) => name = value,
                         decoration: InputDecoration(
                           labelText: 'Name: ',
                           labelStyle: TextStyle(fontSize: 20.0),
@@ -50,9 +78,9 @@ class _UpdateStudentPageState extends State<UpdateStudentPage> {
                     Container(
                       margin: EdgeInsets.symmetric(vertical: 10.0),
                       child: TextFormField(
-                        initialValue: "sonam@gmail.com",
+                        initialValue: email,
                         autofocus: false,
-                        onChanged: (value) => {},
+                        onChanged: (value) => email = value,
                         decoration: InputDecoration(
                           labelText: 'Email: ',
                           labelStyle: TextStyle(fontSize: 20.0),
@@ -73,9 +101,9 @@ class _UpdateStudentPageState extends State<UpdateStudentPage> {
                     Container(
                       margin: EdgeInsets.symmetric(vertical: 10.0),
                       child: TextFormField(
-                        initialValue: "123123",
+                        initialValue: password,
                         autofocus: false,
-                        onChanged: (value) => {},
+                        onChanged: (value) => password = value,
                         obscureText: true,
                         decoration: InputDecoration(
                           labelText: 'Password: ',
@@ -100,7 +128,7 @@ class _UpdateStudentPageState extends State<UpdateStudentPage> {
                             onPressed: () {
                               // Validate returns true if the form is valid, otherwise false.
                               if (_formKey.currentState!.validate()) {
-                                updateUser();
+                                updateUser(widget.id, name, email, password);
                                 Navigator.pop(context);
                               }
                             },
@@ -123,7 +151,9 @@ class _UpdateStudentPageState extends State<UpdateStudentPage> {
                     )
                   ],
                 ),
-              )
-          ));
+              );
+            },
+          )),
+    );
   }
 }
